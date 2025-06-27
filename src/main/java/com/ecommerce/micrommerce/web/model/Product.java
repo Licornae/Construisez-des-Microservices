@@ -1,6 +1,8 @@
 package com.ecommerce.micrommerce.web.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.DecimalMin;
@@ -18,6 +20,7 @@ public class Product {
     private double prix;
 
     //information que nous ne souhaitons pas exposer
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private double prixAchat;
 
     public Product() {

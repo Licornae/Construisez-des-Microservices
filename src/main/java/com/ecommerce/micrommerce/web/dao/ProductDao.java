@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface ProductDao extends JpaRepository<Product, Integer> {
     Product findById(int id);
-    List<Product> findByPrixGreaterThan(int prixLimit);
+    List<Product> findByPrixGreaterThan(double prixLimit);
     List<Product> findAllByOrderByNomAsc();
 }

@@ -70,7 +70,7 @@ public class ProductController {
     }
 
     @GetMapping(value = "test/produits/{prixLimit}")
-    public List<Product> testeDeRequetes(@PathVariable int prixLimit) {
+    public List<Product> testeDeRequetes(@PathVariable double prixLimit) {
         return productDao.findByPrixGreaterThan(prixLimit);
     }
 

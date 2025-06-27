@@ -66,6 +66,11 @@ public class ProductController {
         return marges;
     }
 
+    @GetMapping("/ProduitsTri")
+    public List<Product> trierProduitsParOrdreAlphabetique() {
+        return productDao.findAllByOrderByNomAsc();
+    }
+
     @PostMapping(value = "/Produits")
     public ResponseEntity<Product> ajouterProduit(@RequestBody @Valid Product product) {
         Product productAdded = productDao.save(product);

@@ -1,13 +1,18 @@
 package com.ecommerce.micrommerce.web.controller;
 
 import com.ecommerce.micrommerce.web.dao.ProductDao;
+import com.ecommerce.micrommerce.web.exceptions.ProductValidator;
+import com.ecommerce.micrommerce.web.exceptions.ProduitGratuitException;
 import com.ecommerce.micrommerce.web.exceptions.ProduitIntrouvableException;
 import com.ecommerce.micrommerce.web.model.Product;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.validation.BeanPropertyBindingResult;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -19,10 +24,24 @@ import java.util.Map;
 @RestController
 public class ProductController {
 
+    @Autowired
+    private ProductValidator productValidator;
+
     private final ProductDao productDao;
 
     public ProductController(ProductDao productDao) {
         this.productDao = productDao;
+    }
+
+    private void validateProduct(Product product) {
+        // Créer un BindingResult temporaire
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(product, "product");
+        productValidator.validate(product, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            String message = bindingResult.getFieldError().getDefaultMessage();
+            throw new ProduitGratuitException(message);
+        }
     }
 
     @DeleteMapping (value = "/Produits/{id}")
@@ -32,6 +51,7 @@ public class ProductController {
 
     @PutMapping (value = "/Produits")
     public void updateProduit(@RequestBody Product product) {
+        validateProduct(product);
         productDao.save(product);
     }
 
@@ -72,7 +92,8 @@ public class ProductController {
     }
 
     @PostMapping(value = "/Produits")
-    public ResponseEntity<Product> ajouterProduit(@RequestBody @Valid Product product) {
+    public ResponseEntity<Product> ajouterProduit(@RequestBody Product product) {
+        validateProduct(product);
         Product productAdded = productDao.save(product);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
